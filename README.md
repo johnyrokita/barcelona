@@ -1,5 +1,7 @@
 # Barcelona
 
+<img src="https://img.shields.io/github/v/release/johnyrokita/barcelona?style=flat" alt="Release" /> <img src="https://img.shields.io/github/license/johnyrokita/barcelona?style=flat" alt="License" />
+
 I have a habit of spinning up new side projects, and i got tired of the friction of manually creating a new postgres database for every single idea. It was the same tedious psql commands, every single time.
 
 So, i built Barcelona. It's a simple, opinionated dashboard that automates the entire provisioning process. It handles creating the database, the user, and instantly provides both the direct postgres and a pgbouncer connection string.
@@ -128,3 +130,7 @@ That includes:
 The first registered account becomes the approved admin automatically.
 
 After that, new accounts are created in a pending state until an admin approves them from the dashboard.
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.
