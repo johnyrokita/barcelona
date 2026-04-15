@@ -28,6 +28,7 @@ services:
       - "5352:5352"
     environment:
       BARCELONA_SECRET_KEY: replace-me-with-a-long-random-secret
+      BARCELONA_SECURE_COOKIES: "false"
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
       POSTGRES_CONNECTION_HOST: localhost:5432
       # Optional: only set this if you have a PgBouncer instance you want Barcelona to show.

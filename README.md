@@ -24,6 +24,7 @@ docker run -d \
   --name barcelona \
   -p 5352:5352 \
   -e BARCELONA_SECRET_KEY=replace-me-with-a-long-random-secret \
+  -e BARCELONA_SECURE_COOKIES=false \
   -e DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/postgres \
   -e POSTGRES_CONNECTION_HOST=localhost:5432 \
   -v "$(pwd)/data:/app/data" \
@@ -49,6 +50,7 @@ services:
       - "5352:5352"
     environment:
       BARCELONA_SECRET_KEY: replace-me-with-a-long-random-secret
+      BARCELONA_SECURE_COOKIES: "false"
       DATABASE_URL: postgresql://postgres:postgres@host.docker.internal:5432/postgres
       POSTGRES_CONNECTION_HOST: localhost:5432
       # Optional
@@ -61,6 +63,7 @@ services:
 What the env vars do:
 
 - `BARCELONA_SECRET_KEY`: encrypts the managed database passwords stored in the local SQLite file
+- `BARCELONA_SECURE_COOKIES`: set this to `false` if you're serving Barcelona over plain HTTP; otherwise it defaults to secure cookies in production
 - `DATABASE_URL`: the real postgres admin connection Barcelona uses for provisioning, stats, and backups
 - `POSTGRES_CONNECTION_HOST`: only used for the displayed direct postgres connection string
 - `PGBOUNCER_CONNECTION_HOST`: only used for the displayed pgbouncer connection string, and only if you set it
@@ -96,6 +99,7 @@ Example:
 ```bash
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
 BARCELONA_SECRET_KEY=replace-me-with-a-long-random-secret
+BARCELONA_SECURE_COOKIES=false
 ```
 
 `BARCELONA_SECRET_KEY` is used to encrypt the managed database passwords stored in the local SQLite file.

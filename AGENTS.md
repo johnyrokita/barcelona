@@ -77,6 +77,7 @@ Managed database passwords are encrypted with `BARCELONA_SECRET_KEY`.
 Optional env vars for generated connection strings:
 
 - `BARCELONA_SECRET_KEY`
+- `BARCELONA_SECURE_COOKIES`
 - `POSTGRES_CONNECTION_HOST`
 - `PGBOUNCER_CONNECTION_HOST`
 

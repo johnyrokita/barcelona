@@ -130,7 +130,7 @@ export async function createUserSession(userId: number) {
   cookieStore.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureCookies(),
     path: "/",
     maxAge: SESSION_MAX_AGE_SECONDS,
   });
@@ -164,6 +164,20 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   }
 
   return user;
+}
+
+function shouldUseSecureCookies() {
+  const value = process.env.BARCELONA_SECURE_COOKIES?.trim().toLowerCase();
+
+  if (value === "true") {
+    return true;
+  }
+
+  if (value === "false") {
+    return false;
+  }
+
+  return process.env.NODE_ENV === "production";
 }
 
 export async function requirePageUser() {
