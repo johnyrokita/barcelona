@@ -160,10 +160,6 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   const user = getSessionUserByTokenHash(hashSessionToken(token));
 
   if (!user || !user.isApproved) {
-    cookieStore.delete(SESSION_COOKIE_NAME);
-    if (token) {
-      deleteSession(hashSessionToken(token));
-    }
     return null;
   }
 
