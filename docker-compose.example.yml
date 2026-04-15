@@ -25,7 +25,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "5352:5352"
     environment:
       BARCELONA_SECRET_KEY: replace-me-with-a-long-random-secret
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres

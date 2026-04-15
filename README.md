@@ -20,7 +20,7 @@ You can run Barcelona directly with `docker run`:
 ```bash
 docker run -d \
   --name barcelona \
-  -p 3000:3000 \
+  -p 5352:5352 \
   -e BARCELONA_SECRET_KEY=replace-me-with-a-long-random-secret \
   -e DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/postgres \
   -e POSTGRES_CONNECTION_HOST=localhost:5432 \
@@ -31,7 +31,7 @@ docker run -d \
 
 That will:
 
-- expose Barcelona on `http://localhost:3000`
+- expose Barcelona on `http://localhost:5352`
 - store the SQLite database in `./data`
 - store SQL backups in `./backups`
 
@@ -44,7 +44,7 @@ services:
     container_name: barcelona
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "5352:5352"
     environment:
       BARCELONA_SECRET_KEY: replace-me-with-a-long-random-secret
       DATABASE_URL: postgresql://postgres:postgres@host.docker.internal:5432/postgres
@@ -85,7 +85,7 @@ Start the app:
 bun dev
 ```
 
-Then open [http://localhost:3000](http://localhost:3000).
+Then open [http://localhost:5352](http://localhost:5352).
 
 You'll need a `DATABASE_URL` that points at a postgres instance Barcelona can administer.
 
