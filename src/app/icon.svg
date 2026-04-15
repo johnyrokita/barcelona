@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <path
+    d="M14 12L31 6L46 10L56 24L50 42L34 58L18 54L8 38L10 22L14 12Z"
+    fill="#111111"
+  />
+  <path
+    d="M27 18L37 16L44 22L42 32L33 41L23 39L18 30L20 22L27 18Z"
+    fill="#FFFFFF"
+  />
+  <path
+    d="M27 24L31 22L35 24L36 29L33 33L28 33L25 29L27 24Z"
+    fill="#111111"
+  />
+</svg>

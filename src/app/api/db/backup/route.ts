@@ -1,50 +1,55 @@
+import { AuthError, requireApiUser } from "@/lib/auth";
 import { listDatabases } from "@/lib/pg";
 import { spawn } from "child_process";
 import { mkdir } from "fs/promises";
 import path from "path";
 
 export async function POST(request: Request) {
-  const { name } = await request.json();
-
-  if (!name) {
-    return Response.json(
-      {
-        ok: false,
-        error: "Database name is required",
-      },
-      { status: 400 },
-    );
-  }
-
-  const existingDatabases = await listDatabases();
-
-  if (!existingDatabases.includes(name)) {
-    return Response.json(
-      {
-        ok: false,
-        error: "Database not found",
-      },
-      { status: 404 },
-    );
-  }
-
-  const postgresUrl = process.env.DATABASE_URL!;
-  const databaseUrl = new URL(postgresUrl);
-  databaseUrl.pathname = `/${name}`;
-
-  const backupDir = path.join(process.cwd(), "backups");
-  const safeTimestamp = new Date().toISOString().replaceAll(":", "-");
-  const backupName = path.join(backupDir, `${name}-${safeTimestamp}.sql`);
-
-  const dumpArgs = [
-    "--format=custom",
-    "--no-owner",
-    "--no-privileges",
-    `--dbname=${databaseUrl.toString()}`,
-    `--file=${backupName}`,
-  ];
+  let name = "";
 
   try {
+    await requireApiUser();
+    const body = (await request.json()) as { name?: string };
+    name = body.name ?? "";
+
+    if (!name) {
+      return Response.json(
+        {
+          ok: false,
+          error: "Database name is required",
+        },
+        { status: 400 },
+      );
+    }
+
+    const existingDatabases = await listDatabases();
+
+    if (!existingDatabases.includes(name)) {
+      return Response.json(
+        {
+          ok: false,
+          error: "Database not found",
+        },
+        { status: 404 },
+      );
+    }
+
+    const postgresUrl = process.env.DATABASE_URL!;
+    const databaseUrl = new URL(postgresUrl);
+    databaseUrl.pathname = `/${name}`;
+
+    const backupDir = path.join(process.cwd(), "backups");
+    const safeTimestamp = new Date().toISOString().replaceAll(":", "-");
+    const backupName = path.join(backupDir, `${name}-${safeTimestamp}.sql`);
+
+    const dumpArgs = [
+      "--format=custom",
+      "--no-owner",
+      "--no-privileges",
+      `--dbname=${databaseUrl.toString()}`,
+      `--file=${backupName}`,
+    ];
+
     await mkdir(backupDir, { recursive: true });
 
     await new Promise<void>((resolve, reject) => {
@@ -75,14 +80,19 @@ export async function POST(request: Request) {
     return Response.json({
       ok: true,
       message: `Database ${name} backed up successfully`,
+      data: {
+        fileName: path.basename(backupName),
+        filePath: backupName,
+      },
     });
   } catch (error) {
+    const status = error instanceof AuthError ? error.status : 500;
     return Response.json(
       {
         ok: false,
         error: `Failed to back up database ${name}: ${error instanceof Error ? error.message : String(error)}`,
       },
-      { status: 500 },
+      { status },
     );
   }
 }

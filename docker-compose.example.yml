@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: barcelona-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  barcelona:
+    image: ghcr.io/janrokita/barcelona:latest
+    container_name: barcelona
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      BARCELONA_SECRET_KEY: replace-me-with-a-long-random-secret
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
+      POSTGRES_CONNECTION_HOST: localhost:5432
+      # Optional: only set this if you have a PgBouncer instance you want Barcelona to show.
+      # PGBOUNCER_CONNECTION_HOST: localhost:6432
+    volumes:
+      - barcelona-data:/app/data
+      - barcelona-backups:/app/backups
+
+volumes:
+  postgres-data:
+  barcelona-data:
+  barcelona-backups:

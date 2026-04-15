@@ -1,7 +1,13 @@
 {
   "name": "barcelona",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "license": "MIT",
+  "author": {
+    "name": "Johny Rokita",
+    "email": "johny@rokita.org",
+    "url": "https://rokita.org"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,6 +16,9 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "argon2": "^0.44.0",
+    "better-sqlite3": "^12.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -20,7 +29,9 @@
     "lucide-react": "^1.8.0",
     "next": "16.2.3",
     "next-themes": "^0.4.6",
+    "otpauth": "^9.5.0",
     "pg": "^8.20.0",
+    "qrcode": "^1.5.4",
     "react": "19.2.4",
     "react-day-picker": "^9.14.0",
     "react-dom": "19.2.4",
@@ -34,8 +45,9 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^25.6.0",
     "@types/pg": "^8.20.0",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
@@ -48,6 +60,8 @@
     "unrs-resolver"
   ],
   "trustedDependencies": [
+    "argon2",
+    "better-sqlite3",
     "sharp",
     "unrs-resolver"
   ]
