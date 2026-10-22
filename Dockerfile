@@ -1,4 +1,7 @@
-FROM node:24-bookworm-slim AS base
+# Pinned to a patched release; bump on Node security releases.
+ARG NODE_VERSION=24.22.1
+
+FROM node:${NODE_VERSION}-bookworm-slim AS base
 
 ENV BUN_INSTALL=/root/.bun
 ENV PATH=$BUN_INSTALL/bin:$PATH
@@ -30,7 +33,7 @@ ENV COMMIT_SHA=$GIT_COMMIT_SHA
 ENV RELEASE_VERSION=$RELEASE_VERSION
 RUN ./node_modules/.bin/next build
 
-FROM node:24-bookworm-slim AS runner
+FROM node:${NODE_VERSION}-bookworm-slim AS runner
 WORKDIR /app
 
 ARG GIT_COMMIT_SHA=""
