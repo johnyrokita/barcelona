@@ -1,5 +1,5 @@
 # Pinned to a patched release; bump on Node security releases.
-ARG NODE_VERSION=24.22.1
+ARG NODE_VERSION=24.22.3
 
 FROM node:${NODE_VERSION}-bookworm-slim AS base
 
@@ -44,6 +44,20 @@ ENV PORT=5352
 ENV HOSTNAME=0.0.0.0
 ENV COMMIT_SHA=$GIT_COMMIT_SHA
 ENV RELEASE_VERSION=$RELEASE_VERSION
+
+# The backup API shells out to pg_dump, which refuses to dump servers newer
+# than itself. Debian's client is too old, so install it from the PGDG repo;
+# bump the major when a new Postgres release lands.
+ARG PG_CLIENT_VERSION=18
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates curl \
+  && curl -fsSL --retry 3 --retry-all-errors -o /usr/share/keyrings/pgdg.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+  && echo "deb [signed-by=/usr/share/keyrings/pgdg.asc] https://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends postgresql-client-${PG_CLIENT_VERSION} \
+  && apt-get purge -y curl \
+  && apt-get autoremove -y \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN addgroup --system --gid 1001 nodejs \
   && adduser --system --uid 1001 nextjs

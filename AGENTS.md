@@ -5,13 +5,13 @@
 Barcelona is a Next.js 16 App Router application for managing local or hosted Postgres instances. It can:
 
 - create a Postgres role + database + grants from a single slug
-- store managed database metadata and plaintext generated passwords in local SQLite
+- store managed database metadata and encrypted generated passwords in local SQLite
 - list databases, show stats, create backups, and inspect per-database details
 - protect the UI and API with email/password auth, admin approval, and optional TOTP 2FA
 
 Key technologies:
 
-- Next.js 16.2.3 with the App Router
+- Next.js 16 with the App Router
 - React 19
 - TypeScript with `strict: true`
 - Tailwind CSS 4
@@ -28,13 +28,13 @@ Key technologies:
 Recommended command prefixes:
 
 - `bun install`
-- `mise exec node@24.14.1 -- npx tsc --noEmit`
-- `mise exec node@24.14.1 -- npx eslint ...`
-- `mise exec node@24.14.1 -- npx next build`
+- `mise exec node@24 -- npx tsc --noEmit`
+- `mise exec node@24 -- npx eslint ...`
+- `mise exec node@24 -- npx next build`
 
 If native modules stop loading after a Node version change, rebuild them with:
 
-- `mise exec node@24.14.1 -- npm rebuild better-sqlite3 argon2`
+- `mise exec node@24 -- npm rebuild better-sqlite3 argon2`
 
 ## Next.js Notes
 
@@ -62,11 +62,11 @@ Start local development:
 
 Production build:
 
-- `mise exec node@24.14.1 -- npx next build`
+- `mise exec node@24 -- npx next build`
 
 Start production server after building:
 
-- `mise exec node@24.14.1 -- npx next start`
+- `mise exec node@24 -- npx next start`
 
 ## Environment and Local Data
 
@@ -90,7 +90,7 @@ Local state is stored on disk and is gitignored:
 
 SQLite stores:
 
-- managed database metadata and plaintext generated passwords
+- managed database metadata and encrypted generated passwords
 - users
 - sessions
 - 2FA secrets
@@ -115,13 +115,13 @@ The homepage is read/manage-oriented. Database creation is on its own page at `/
 
 There is currently no dedicated unit/integration test suite in this repo. The main validation steps are:
 
-- Type-check: `mise exec node@24.14.1 -- npx tsc --noEmit`
-- Lint all app code: `mise exec node@24.14.1 -- npx eslint src/app src/components src/lib`
-- Production build: `mise exec node@24.14.1 -- npx next build`
+- Type-check: `mise exec node@24 -- npx tsc --noEmit`
+- Lint all app code: `mise exec node@24 -- npx eslint src/app src/components src/lib`
+- Production build: `mise exec node@24 -- npx next build`
 
 For targeted checks while editing, lint just the touched files:
 
-- `mise exec node@24.14.1 -- npx eslint src/app/home.tsx`
+- `mise exec node@24 -- npx eslint src/app/home.tsx`
 
 Agents should run the relevant validation commands after changes, and prefer a full `next build` when changing routing, auth, or deployment-sensitive code.
 
@@ -130,7 +130,7 @@ Agents should run the relevant validation commands after changes, and prefer a f
 - Use TypeScript and keep code type-safe.
 - Follow existing App Router patterns in `src/app`.
 - Use the `@/` import alias for `src`.
-- Prefer existing UI primitives in `src/components/ui/` instead of adding one-off controls.
+- Prefer existing UI primitives in `src/components/ui/` instead of adding one-off controls. Only the primitives in use are kept; add a missing one with `bunx shadcn add <name>` when it is actually needed.
 - Prefer client components only where state, effects, or browser APIs are actually needed.
 - Keep copy concise in the UI; avoid redundant subtitles or developer-facing explanatory text.
 - Do not add subtitles, helper copy, or card descriptions unless they add real user value; default to no subtitle.
@@ -144,7 +144,7 @@ Agents should run the relevant validation commands after changes, and prefer a f
 - Later accounts require admin approval before sign-in.
 - Passwords are hashed with Argon2.
 - 2FA uses TOTP and can be managed from `/settings`.
-- Managed database passwords are intentionally stored in plaintext SQLite so they can be viewed later; treat that file as sensitive local state.
+- Managed database passwords are stored reversibly (AES-256-GCM, key derived from `BARCELONA_SECRET_KEY`, see `src/lib/secrets.ts`) so they can be viewed later; still treat the SQLite file as sensitive local state.
 
 When adding new pages or route handlers, decide explicitly whether they require:
 
@@ -167,11 +167,12 @@ Deployment is container-oriented.
 - `next.config.ts` sets `output: "standalone"`
 - `Dockerfile` builds with Bun for dependency install and Node for runtime
 - final container runs as non-root and creates `/app/data` and `/app/backups`
+- final container installs `pg_dump` from the PGDG repo (`PG_CLIENT_VERSION` in the `Dockerfile`); it must be at least as new as the Postgres server being backed up
 
 Release publishing is automated:
 
 - `.github/workflows/publish-docker.yml`
-- publishes `linux/amd64` images to `ghcr.io`
+- publishes `linux/amd64` and `linux/arm64` images to `ghcr.io`
 - triggers on GitHub release publication
 - tags images with the GitHub release tag
 
@@ -179,9 +180,9 @@ Release publishing is automated:
 
 Before considering work complete:
 
-- run `mise exec node@24.14.1 -- npx tsc --noEmit`
-- run `mise exec node@24.14.1 -- npx eslint ...` for changed files or the full app
-- run `mise exec node@24.14.1 -- npx next build` for routing/auth/deployment changes
+- run `mise exec node@24 -- npx tsc --noEmit`
+- run `mise exec node@24 -- npx eslint ...` for changed files or the full app
+- run `mise exec node@24 -- npx next build` for routing/auth/deployment changes
 
 Keep changes narrow and consistent with the existing product direction:
 

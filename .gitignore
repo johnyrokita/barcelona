@@ -39,5 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-backups
-data
+
+# local state (anchored so src/**/backups route folders are not ignored)
+/backups
+/data

@@ -1,4 +1,3 @@
-import { Footer } from "./footer";
 import { Header } from "./header";
 
 export async function Container({ children }: { children: React.ReactNode }) {
